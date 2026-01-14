@@ -1,0 +1,5 @@
+{
+  "name": "StrategyFlow AI",
+  "description": "An agentic SWOT analysis and product roadmap generator powered by Gemini 3. Research companies using real-time search and generate strategic roadmaps based on identified strengths and threats.",
+  "requestFramePermissions": []
+}
