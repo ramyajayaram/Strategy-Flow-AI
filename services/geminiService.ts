@@ -4,6 +4,10 @@ import { SwotData, RoadmapInitiative } from "../types";
 
 const getAIClient = () => new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
+const THINKING_CONFIG = {
+  thinkingConfig: { thinkingBudget: 32768 }
+};
+
 export const conductResearch = async (companyName: string) => {
   const ai = getAIClient();
   const response = await ai.models.generateContent({
@@ -11,6 +15,7 @@ export const conductResearch = async (companyName: string) => {
     contents: `Conduct detailed research on the company "${companyName}". Focus on their current market position, recent product launches, financial health, and customer sentiment. Provide a comprehensive summary.`,
     config: {
       tools: [{ googleSearch: {} }],
+      ...THINKING_CONFIG
     },
   });
 
@@ -28,7 +33,7 @@ export const conductResearch = async (companyName: string) => {
 export const generateSWOT = async (researchText: string): Promise<SwotData> => {
   const ai = getAIClient();
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-3-pro-preview",
     contents: `Based on the following research, generate a structured SWOT analysis:\n\n${researchText}`,
     config: {
       responseMimeType: "application/json",
@@ -42,6 +47,7 @@ export const generateSWOT = async (researchText: string): Promise<SwotData> => {
         },
         required: ["strengths", "weaknesses", "opportunities", "threats"],
       },
+      ...THINKING_CONFIG
     },
   });
 
@@ -51,7 +57,7 @@ export const generateSWOT = async (researchText: string): Promise<SwotData> => {
 export const generateRoadmap = async (swot: SwotData, companyName: string): Promise<RoadmapInitiative[]> => {
   const ai = getAIClient();
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-3-pro-preview",
     contents: `Based on the SWOT analysis for ${companyName}, propose a 4-quarter product roadmap that leverages strengths/opportunities and mitigates weaknesses/threats.\n\nSWOT: ${JSON.stringify(swot)}`,
     config: {
       responseMimeType: "application/json",
@@ -69,6 +75,7 @@ export const generateRoadmap = async (swot: SwotData, companyName: string): Prom
           required: ["title", "description", "quarter", "priority", "category"],
         },
       },
+      ...THINKING_CONFIG
     },
   });
 
